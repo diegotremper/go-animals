@@ -21,7 +21,7 @@ func UpdateAnimal(id int, r AnimalUpdateRequest) error {
 	return err
 }
 
-func ListAnimals() ([]Animal, error) {
+var ListAnimals = func() ([]Animal, error) {
 	var (
 		animals      []Animal = make([]Animal, 0)
 		sqlStatement          = `

@@ -1,4 +1,4 @@
-module github.com/pengenpaham/gin-sqlx-example
+module github.com/diegotremper/go-animals
 
 go 1.20
 

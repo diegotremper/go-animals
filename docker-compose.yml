@@ -20,7 +20,7 @@ services:
     image: migrate/migrate:v4.15.2
     profiles: ["tools"]
     volumes:
-      - ./db/migrations:/migrations
+      - ./migrations:/migrations
     entrypoint:
       [
         "migrate",

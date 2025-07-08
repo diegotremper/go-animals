@@ -6,14 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(handler *animal.AnimalHandler) *gin.Engine {
 	r := gin.Default()
 	r.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"message": "pong"})
 	})
-
-	repo := animal.PostgresAnimalRepository{}
-	handler := animal.NewAnimalHandler(repo)
 
 	r.POST("/animals", handler.CreateAnimalHandler)
 	r.GET("/animals/:id", handler.GetAnimalHandler)

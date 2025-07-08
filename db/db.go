@@ -8,13 +8,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var DB *sqlx.DB
-
-func InitDB() {
-	var err error
+func InitDB() *sqlx.DB {
 	var connectString = os.Getenv("DB_CONN")
-	DB, err = sqlx.Connect("postgres", connectString)
+	db, err := sqlx.Connect("postgres", connectString)
 	if err != nil {
 		log.Fatalf("Database connection failed: %v", err)
 	}
+
+	return db
 }

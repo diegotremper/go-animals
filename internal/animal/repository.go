@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/diegotremper/go-animals/db"
+	"github.com/jmoiron/sqlx"
 )
 
 type AnimalRepository interface {
@@ -16,21 +16,27 @@ type AnimalRepository interface {
 	DeleteAnimal(id int) error
 }
 
-type PostgresAnimalRepository struct{}
+type PostgresAnimalRepository struct {
+	db *sqlx.DB
+}
 
-func (PostgresAnimalRepository) CreateAnimal(r AninalCreateRequest) error {
-	_, err := db.DB.Exec(`INSERT INTO animals (name, age, description) VALUES ($1, $2, $3)`, r.Name, r.Age, r.Description)
+func NewPostgresAnimalRepository(db *sqlx.DB) *PostgresAnimalRepository {
+	return &PostgresAnimalRepository{db: db}
+}
+
+func (r *PostgresAnimalRepository) CreateAnimal(req AninalCreateRequest) error {
+	_, err := r.db.Exec(`INSERT INTO animals (name, age, description) VALUES ($1, $2, $3)`, req.Name, req.Age, req.Description)
 
 	return err
 }
 
-func (PostgresAnimalRepository) UpdateAnimal(id int, r AnimalUpdateRequest) error {
-	_, err := db.DB.Exec(`UPDATE animals SET name = $1, age = $2, description = $3 WHERE id = $4`, r.Name, r.Age, r.Description, id)
+func (r *PostgresAnimalRepository) UpdateAnimal(id int, req AnimalUpdateRequest) error {
+	_, err := r.db.Exec(`UPDATE animals SET name = $1, age = $2, description = $3 WHERE id = $4`, req.Name, req.Age, req.Description, id)
 
 	return err
 }
 
-func (PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
+func (r *PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
 	var (
 		animals      []Animal = make([]Animal, 0)
 		sqlStatement          = `
@@ -38,7 +44,7 @@ func (PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
 		`
 	)
 
-	rows, err := db.DB.Queryx(sqlStatement)
+	rows, err := r.db.Queryx(sqlStatement)
 	if err != nil {
 		return nil, fmt.Errorf("ListAnimals query error: %w", err)
 	}
@@ -56,13 +62,13 @@ func (PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
 	return animals, nil
 }
 
-func (PostgresAnimalRepository) GetAnimal(id int) (Animal, error) {
+func (r *PostgresAnimalRepository) GetAnimal(id int) (Animal, error) {
 	var (
 		animal       Animal
 		sqlStatement = `SELECT * FROM animals WHERE id = $1`
 	)
 
-	err := db.DB.QueryRowx(sqlStatement, id).StructScan(&animal)
+	err := r.db.QueryRowx(sqlStatement, id).StructScan(&animal)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -74,8 +80,8 @@ func (PostgresAnimalRepository) GetAnimal(id int) (Animal, error) {
 	return animal, nil
 }
 
-func (PostgresAnimalRepository) DeleteAnimal(id int) error {
-	_, err := db.DB.Exec(`DELETE FROM animals WHERE id = $1`, id)
+func (r *PostgresAnimalRepository) DeleteAnimal(id int) error {
+	_, err := r.db.Exec(`DELETE FROM animals WHERE id = $1`, id)
 
 	return err
 }

@@ -12,11 +12,14 @@ func SetupRouter() *gin.Engine {
 		ctx.JSON(200, gin.H{"message": "pong"})
 	})
 
-	r.POST("/animals", animal.CreateAnimalHandler)
-	r.GET("/animals/:id", animal.GetAnimalHandler)
-	r.GET("/animals", animal.ListAnimalsHandler)
-	r.PUT("/animals/:id", animal.UpdateAnimalHandler)
-	r.DELETE("/animals/:id", animal.DeleteAnimalHandler)
+	repo := animal.PostgresAnimalRepository{}
+	handler := animal.NewAnimalHandler(repo)
+
+	r.POST("/animals", handler.CreateAnimalHandler)
+	r.GET("/animals/:id", handler.GetAnimalHandler)
+	r.GET("/animals", handler.ListAnimalsHandler)
+	r.PUT("/animals/:id", handler.UpdateAnimalHandler)
+	r.DELETE("/animals/:id", handler.DeleteAnimalHandler)
 
 	return r
 }

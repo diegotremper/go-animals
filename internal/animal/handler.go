@@ -7,14 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateAnimalHandler(ctx *gin.Context) {
+type AnimalHandler struct {
+	repo AnimalRepository
+}
+
+func NewAnimalHandler(repo AnimalRepository) *AnimalHandler {
+	return &AnimalHandler{repo: repo}
+}
+
+func (h *AnimalHandler) CreateAnimalHandler(ctx *gin.Context) {
 	var req AninalCreateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
 		return
 	}
 
-	err := CreateAnimal(req)
+	err := h.repo.CreateAnimal(req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create animal"})
 		return
@@ -23,7 +31,7 @@ func CreateAnimalHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Animal created successfully"})
 }
 
-func UpdateAnimalHandler(ctx *gin.Context) {
+func (h *AnimalHandler) UpdateAnimalHandler(ctx *gin.Context) {
 	var idStr = ctx.Param("id")
 	var id, errA = strconv.Atoi(idStr)
 
@@ -38,7 +46,7 @@ func UpdateAnimalHandler(ctx *gin.Context) {
 		return
 	}
 
-	err := UpdateAnimal(id, req)
+	err := h.repo.UpdateAnimal(id, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to updating animal"})
 		return
@@ -47,8 +55,8 @@ func UpdateAnimalHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Animal updated successfully"})
 }
 
-func ListAnimalsHandler(ctx *gin.Context) {
-	var animals, err = ListAnimals()
+func (h *AnimalHandler) ListAnimalsHandler(ctx *gin.Context) {
+	var animals, err = h.repo.ListAnimals()
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed retrieving list of animals"})
@@ -59,7 +67,7 @@ func ListAnimalsHandler(ctx *gin.Context) {
 
 }
 
-func GetAnimalHandler(ctx *gin.Context) {
+func (h *AnimalHandler) GetAnimalHandler(ctx *gin.Context) {
 	var idStr = ctx.Param("id")
 	var id, errA = strconv.Atoi(idStr)
 	if errA != nil {
@@ -67,7 +75,7 @@ func GetAnimalHandler(ctx *gin.Context) {
 		return
 	}
 
-	var animal, err = GetAnimal(id)
+	var animal, err = h.repo.GetAnimal(id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error getting animal"})
 		return
@@ -76,7 +84,7 @@ func GetAnimalHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, animal)
 }
 
-func DeleteAnimalHandler(ctx *gin.Context) {
+func (h *AnimalHandler) DeleteAnimalHandler(ctx *gin.Context) {
 	var idStr = ctx.Param("id")
 	var id, errA = strconv.Atoi(idStr)
 	if errA != nil {
@@ -84,7 +92,7 @@ func DeleteAnimalHandler(ctx *gin.Context) {
 		return
 	}
 
-	err := DeleteAnimal(id)
+	err := h.repo.DeleteAnimal(id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error deleting animal"})
 		return

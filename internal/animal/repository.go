@@ -1,27 +1,36 @@
 package animal
 
 import (
-	"fmt"
-
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/diegotremper/go-animals/db"
 )
 
-func CreateAnimal(r AninalCreateRequest) error {
+type AnimalRepository interface {
+	CreateAnimal(r AninalCreateRequest) error
+	UpdateAnimal(id int, r AnimalUpdateRequest) error
+	ListAnimals() ([]Animal, error)
+	GetAnimal(id int) (Animal, error)
+	DeleteAnimal(id int) error
+}
+
+type PostgresAnimalRepository struct{}
+
+func (PostgresAnimalRepository) CreateAnimal(r AninalCreateRequest) error {
 	_, err := db.DB.Exec(`INSERT INTO animals (name, age, description) VALUES ($1, $2, $3)`, r.Name, r.Age, r.Description)
 
 	return err
 }
 
-func UpdateAnimal(id int, r AnimalUpdateRequest) error {
+func (PostgresAnimalRepository) UpdateAnimal(id int, r AnimalUpdateRequest) error {
 	_, err := db.DB.Exec(`UPDATE animals SET name = $1, age = $2, description = $3 WHERE id = $4`, r.Name, r.Age, r.Description, id)
 
 	return err
 }
 
-var ListAnimals = func() ([]Animal, error) {
+func (PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
 	var (
 		animals      []Animal = make([]Animal, 0)
 		sqlStatement          = `
@@ -47,7 +56,7 @@ var ListAnimals = func() ([]Animal, error) {
 	return animals, nil
 }
 
-func GetAnimal(id int) (Animal, error) {
+func (PostgresAnimalRepository) GetAnimal(id int) (Animal, error) {
 	var (
 		animal       Animal
 		sqlStatement = `SELECT * FROM animals WHERE id = $1`
@@ -65,7 +74,7 @@ func GetAnimal(id int) (Animal, error) {
 	return animal, nil
 }
 
-func DeleteAnimal(id int) error {
+func (PostgresAnimalRepository) DeleteAnimal(id int) error {
 	_, err := db.DB.Exec(`DELETE FROM animals WHERE id = $1`, id)
 
 	return err

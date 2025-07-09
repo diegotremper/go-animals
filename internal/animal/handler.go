@@ -16,7 +16,7 @@ func NewAnimalHandler(repo AnimalRepository) *AnimalHandler {
 }
 
 func (h *AnimalHandler) CreateAnimalHandler(ctx *gin.Context) {
-	var req AninalCreateRequest
+	var req AnimalCreateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
 		return

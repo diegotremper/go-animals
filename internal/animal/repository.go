@@ -12,7 +12,7 @@ import (
 var ErrAnimalNotFound = errors.New("animal not found")
 
 type AnimalRepository interface {
-	CreateAnimal(r AninalCreateRequest) error
+	CreateAnimal(r AnimalCreateRequest) error
 	UpdateAnimal(id int64, r AnimalUpdateRequest) error
 	ListAnimals() ([]Animal, error)
 	GetAnimal(id int64) (Animal, error)
@@ -28,7 +28,7 @@ func NewPostgresAnimalRepository(log *zap.Logger, db *sqlx.DB) *PostgresAnimalRe
 	return &PostgresAnimalRepository{log: log, db: db}
 }
 
-func (r *PostgresAnimalRepository) CreateAnimal(req AninalCreateRequest) error {
+func (r *PostgresAnimalRepository) CreateAnimal(req AnimalCreateRequest) error {
 	_, err := r.db.Exec(`INSERT INTO animals (name, age, description) VALUES ($1, $2, $3)`, req.Name, req.Age, req.Description)
 	if err != nil {
 		return fmt.Errorf("failed to insert animal: %w", err)

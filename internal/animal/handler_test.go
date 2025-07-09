@@ -21,14 +21,14 @@ func (m mockRepo) ListAnimals() ([]animal.Animal, error) {
 	}, nil
 }
 
-func (m mockRepo) CreateAnimal(r animal.AninalCreateRequest) error           { return nil }
+func (m mockRepo) CreateAnimal(r animal.AnimalCreateRequest) error           { return nil }
 func (m mockRepo) UpdateAnimal(id int64, r animal.AnimalUpdateRequest) error { return nil }
 func (m mockRepo) GetAnimal(id int64) (animal.Animal, error) {
 	return animal.Animal{ID: id, Name: "Lion", Age: 7, Description: "Fierce"}, nil
 }
 func (m mockRepo) DeleteAnimal(id int64) error { return nil }
 
-func (m mockRepo) CreateAnimalFail(r animal.AninalCreateRequest) error {
+func (m mockRepo) CreateAnimalFail(r animal.AnimalCreateRequest) error {
 	return errors.New("failed to create")
 }
 func (m mockRepo) UpdateAnimalFail(id int64, r animal.AnimalUpdateRequest) error {
@@ -43,7 +43,7 @@ type mockFailRepo struct {
 	mockRepo
 }
 
-func (m mockFailRepo) CreateAnimal(r animal.AninalCreateRequest) error {
+func (m mockFailRepo) CreateAnimal(r animal.AnimalCreateRequest) error {
 	return m.CreateAnimalFail(r)
 }
 func (m mockFailRepo) UpdateAnimal(id int64, r animal.AnimalUpdateRequest) error {

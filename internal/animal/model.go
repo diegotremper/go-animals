@@ -7,7 +7,7 @@ type Animal struct {
 	Description string `db:"description" json:"description"`
 }
 
-type AninalCreateRequest struct {
+type AnimalCreateRequest struct {
 	Name        string
 	Age         int
 	Description string

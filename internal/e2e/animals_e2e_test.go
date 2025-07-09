@@ -107,8 +107,8 @@ func listAnimals(t *testing.T, baseURL string) {
 	}
 }
 
-func getAnimal(t *testing.T, db *sql.DB, baseURL string) int {
-	var id int
+func getAnimal(t *testing.T, db *sql.DB, baseURL string) int64 {
+	var id int64
 	row := db.QueryRow("SELECT id FROM animals WHERE name = $1", "E2ETest")
 	if err := row.Scan(&id); err != nil {
 		t.Fatalf("failed to fetch animal ID: %v", err)
@@ -130,7 +130,7 @@ func getAnimal(t *testing.T, db *sql.DB, baseURL string) int {
 	return id
 }
 
-func deleteAnimal(t *testing.T, baseURL string, id int) {
+func deleteAnimal(t *testing.T, baseURL string, id int64) {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/animals/%d", baseURL, id), nil)
 	if err != nil {
 		t.Fatalf("create delete req failed: %v", err)
@@ -145,7 +145,7 @@ func deleteAnimal(t *testing.T, baseURL string, id int) {
 	}
 }
 
-func assertAnimalDeleted(t *testing.T, db *sql.DB, id int) {
+func assertAnimalDeleted(t *testing.T, db *sql.DB, id int64) {
 	var count int
 	row := db.QueryRow("SELECT COUNT(*) FROM animals WHERE id = $1", id)
 	if err := row.Scan(&count); err != nil {
@@ -196,7 +196,7 @@ func TestE2E_AnimalsLifecycle(t *testing.T) {
 	t.Run("list animals and check count", func(t *testing.T) {
 		listAnimals(t, baseURL)
 	})
-	var createdID int
+	var createdID int64
 	t.Run("get animal by ID", func(t *testing.T) {
 		createdID = getAnimal(t, db, baseURL)
 	})

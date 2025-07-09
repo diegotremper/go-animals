@@ -13,10 +13,10 @@ var ErrAnimalNotFound = errors.New("animal not found")
 
 type AnimalRepository interface {
 	CreateAnimal(r AninalCreateRequest) error
-	UpdateAnimal(id int, r AnimalUpdateRequest) error
+	UpdateAnimal(id int64, r AnimalUpdateRequest) error
 	ListAnimals() ([]Animal, error)
-	GetAnimal(id int) (Animal, error)
-	DeleteAnimal(id int) error
+	GetAnimal(id int64) (Animal, error)
+	DeleteAnimal(id int64) error
 }
 
 type PostgresAnimalRepository struct {
@@ -37,7 +37,7 @@ func (r *PostgresAnimalRepository) CreateAnimal(req AninalCreateRequest) error {
 	return nil
 }
 
-func (r *PostgresAnimalRepository) UpdateAnimal(id int, req AnimalUpdateRequest) error {
+func (r *PostgresAnimalRepository) UpdateAnimal(id int64, req AnimalUpdateRequest) error {
 	res, err := r.db.Exec(`UPDATE animals SET name = $1, age = $2, description = $3 WHERE id = $4`, req.Name, req.Age, req.Description, id)
 	if err != nil {
 		return fmt.Errorf("failed to update animal: %w", err)
@@ -49,7 +49,7 @@ func (r *PostgresAnimalRepository) UpdateAnimal(id int, req AnimalUpdateRequest)
 	if rows == 0 {
 		return ErrAnimalNotFound
 	}
-	r.log.Info("animal updated", zap.Int("id", id))
+	r.log.Info("animal updated", zap.Int64("id", id))
 	return nil
 }
 
@@ -76,7 +76,7 @@ func (r *PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
 	return animals, nil
 }
 
-func (r *PostgresAnimalRepository) GetAnimal(id int) (Animal, error) {
+func (r *PostgresAnimalRepository) GetAnimal(id int64) (Animal, error) {
 	var (
 		animal       Animal
 		sqlStatement = `SELECT * FROM animals WHERE id = $1`
@@ -89,11 +89,11 @@ func (r *PostgresAnimalRepository) GetAnimal(id int) (Animal, error) {
 		}
 		return Animal{}, fmt.Errorf("error getting animal: %w", err)
 	}
-	r.log.Info("retrieved animal", zap.Int("id", animal.ID))
+	r.log.Info("retrieved animal", zap.Int64("id", animal.ID))
 	return animal, nil
 }
 
-func (r *PostgresAnimalRepository) DeleteAnimal(id int) error {
+func (r *PostgresAnimalRepository) DeleteAnimal(id int64) error {
 	res, err := r.db.Exec(`DELETE FROM animals WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete animal: %w", err)
@@ -105,6 +105,6 @@ func (r *PostgresAnimalRepository) DeleteAnimal(id int) error {
 	if rows == 0 {
 		return ErrAnimalNotFound
 	}
-	r.log.Info("deleted animal", zap.Int("id", id))
+	r.log.Info("deleted animal", zap.Int64("id", id))
 	return nil
 }

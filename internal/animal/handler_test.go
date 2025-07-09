@@ -21,23 +21,23 @@ func (m mockRepo) ListAnimals() ([]animal.Animal, error) {
 	}, nil
 }
 
-func (m mockRepo) CreateAnimal(r animal.AninalCreateRequest) error         { return nil }
-func (m mockRepo) UpdateAnimal(id int, r animal.AnimalUpdateRequest) error { return nil }
-func (m mockRepo) GetAnimal(id int) (animal.Animal, error) {
+func (m mockRepo) CreateAnimal(r animal.AninalCreateRequest) error           { return nil }
+func (m mockRepo) UpdateAnimal(id int64, r animal.AnimalUpdateRequest) error { return nil }
+func (m mockRepo) GetAnimal(id int64) (animal.Animal, error) {
 	return animal.Animal{ID: id, Name: "Lion", Age: 7, Description: "Fierce"}, nil
 }
-func (m mockRepo) DeleteAnimal(id int) error { return nil }
+func (m mockRepo) DeleteAnimal(id int64) error { return nil }
 
 func (m mockRepo) CreateAnimalFail(r animal.AninalCreateRequest) error {
 	return errors.New("failed to create")
 }
-func (m mockRepo) UpdateAnimalFail(id int, r animal.AnimalUpdateRequest) error {
+func (m mockRepo) UpdateAnimalFail(id int64, r animal.AnimalUpdateRequest) error {
 	return errors.New("failed to update")
 }
-func (m mockRepo) GetAnimalFail(id int) (animal.Animal, error) {
+func (m mockRepo) GetAnimalFail(id int64) (animal.Animal, error) {
 	return animal.Animal{}, errors.New("not found")
 }
-func (m mockRepo) DeleteAnimalFail(id int) error { return errors.New("failed to delete") }
+func (m mockRepo) DeleteAnimalFail(id int64) error { return errors.New("failed to delete") }
 
 type mockFailRepo struct {
 	mockRepo
@@ -46,13 +46,13 @@ type mockFailRepo struct {
 func (m mockFailRepo) CreateAnimal(r animal.AninalCreateRequest) error {
 	return m.CreateAnimalFail(r)
 }
-func (m mockFailRepo) UpdateAnimal(id int, r animal.AnimalUpdateRequest) error {
+func (m mockFailRepo) UpdateAnimal(id int64, r animal.AnimalUpdateRequest) error {
 	return m.UpdateAnimalFail(id, r)
 }
-func (m mockFailRepo) GetAnimal(id int) (animal.Animal, error) {
+func (m mockFailRepo) GetAnimal(id int64) (animal.Animal, error) {
 	return m.GetAnimalFail(id)
 }
-func (m mockFailRepo) DeleteAnimal(id int) error {
+func (m mockFailRepo) DeleteAnimal(id int64) error {
 	return m.DeleteAnimalFail(id)
 }
 

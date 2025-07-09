@@ -32,13 +32,13 @@ func (h *AnimalHandler) CreateAnimalHandler(ctx *gin.Context) {
 }
 
 func (h *AnimalHandler) UpdateAnimalHandler(ctx *gin.Context) {
-	var idStr = ctx.Param("id")
-	var id, errA = strconv.Atoi(idStr)
-
+	idStr := ctx.Param("id")
+	idInt, errA := strconv.Atoi(idStr)
 	if errA != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
 		return
 	}
+	id := int64(idInt)
 
 	var req AnimalUpdateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -68,12 +68,13 @@ func (h *AnimalHandler) ListAnimalsHandler(ctx *gin.Context) {
 }
 
 func (h *AnimalHandler) GetAnimalHandler(ctx *gin.Context) {
-	var idStr = ctx.Param("id")
-	var id, errA = strconv.Atoi(idStr)
+	idStr := ctx.Param("id")
+	idInt, errA := strconv.Atoi(idStr)
 	if errA != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
 		return
 	}
+	id := int64(idInt)
 
 	var animal, err = h.repo.GetAnimal(id)
 	if err != nil {
@@ -85,12 +86,13 @@ func (h *AnimalHandler) GetAnimalHandler(ctx *gin.Context) {
 }
 
 func (h *AnimalHandler) DeleteAnimalHandler(ctx *gin.Context) {
-	var idStr = ctx.Param("id")
-	var id, errA = strconv.Atoi(idStr)
+	idStr := ctx.Param("id")
+	idInt, errA := strconv.Atoi(idStr)
 	if errA != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
 		return
 	}
+	id := int64(idInt)
 
 	err := h.repo.DeleteAnimal(id)
 	if err != nil {

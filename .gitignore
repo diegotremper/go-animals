@@ -2,3 +2,4 @@
 .vscode/
 go-animals
 coverage.out
+.DS_Store

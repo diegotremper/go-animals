@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/diegotremper/go-animals/infrastructure"
 	"github.com/diegotremper/go-animals/internal/animal"
-	"github.com/diegotremper/go-animals/router"
 
 	"github.com/docker/go-connections/nat"
 	"github.com/gin-gonic/gin"
@@ -31,9 +31,7 @@ import (
 
 func startTestServer(db *sql.DB) (*http.Server, string, func(context.Context) error, error) {
 	gin.SetMode(gin.TestMode)
-	repo := animal.NewPostgresAnimalRepository(sqlx.NewDb(db, "postgres"))
-	handler := animal.NewAnimalHandler(repo)
-	r := router.SetupRouter(handler)
+	r := infrastructure.SetupRouter(infrastructure.InitLogger(), sqlx.NewDb(db, "postgres"))
 	// Use dynamic port
 	ln, err := net.Listen("tcp", ":0")
 	if err != nil {

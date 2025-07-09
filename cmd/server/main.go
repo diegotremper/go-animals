@@ -1,17 +1,16 @@
 package main
 
 import (
-	"github.com/diegotremper/go-animals/config"
-	"github.com/diegotremper/go-animals/db"
-	"github.com/diegotremper/go-animals/internal/animal"
-	"github.com/diegotremper/go-animals/router"
+	"github.com/diegotremper/go-animals/infrastructure"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	config.LoadEnv()
-	repo := animal.NewPostgresAnimalRepository(db.InitDB())
-	handler := animal.NewAnimalHandler(repo)
+	godotenv.Load()
 
-	r := router.SetupRouter(handler)
+	logger := infrastructure.InitLogger()
+	db := infrastructure.InitDB()
+	r := infrastructure.SetupRouter(logger, db)
+
 	r.Run()
 }

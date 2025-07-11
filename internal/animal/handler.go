@@ -8,11 +8,12 @@ import (
 )
 
 type AnimalHandler struct {
-	repo AnimalRepository
+	module Module
+	repo   AnimalRepository
 }
 
-func NewAnimalHandler(repo AnimalRepository) *AnimalHandler {
-	return &AnimalHandler{repo: repo}
+func NewAnimalHandler(module Module, repo AnimalRepository) *AnimalHandler {
+	return &AnimalHandler{module: module, repo: repo}
 }
 
 func (h *AnimalHandler) CreateAnimalHandler(ctx *gin.Context) {

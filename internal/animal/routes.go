@@ -1,16 +1,13 @@
 package animal
 
-import (
-	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
-	"go.uber.org/zap"
-)
+func AddRoutes(module Module) {
+	rg := module.RouterGroup()
+	db := module.Db()
 
-func AddRoutes(log *zap.Logger, db *sqlx.DB, rg *gin.RouterGroup) {
 	animals := rg.Group("/animals")
 
-	repo := NewPostgresAnimalRepository(log, db)
-	handler := NewAnimalHandler(repo)
+	repo := NewPostgresAnimalRepository(db)
+	handler := NewAnimalHandler(module, repo)
 
 	animals.POST("", handler.CreateAnimalHandler)
 	animals.GET("/:id", handler.GetAnimalHandler)

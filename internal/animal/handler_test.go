@@ -2,15 +2,33 @@ package animal_test
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	"github.com/diegotremper/go-animals/infrastructure"
 	"github.com/diegotremper/go-animals/internal/animal"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 )
+
+type mockModule struct{}
+
+func (m mockModule) RootLogger() *slog.Logger {
+	return infrastructure.InitLogger()
+}
+func (m mockModule) NewTransactionLogger(ctx *gin.Context) *slog.Logger {
+	return infrastructure.InitLogger()
+}
+func (m mockModule) Db() *sqlx.DB {
+	return nil
+}
+func (m mockModule) RouterGroup() *gin.RouterGroup {
+	return nil
+}
 
 type mockRepo struct{}
 
@@ -57,8 +75,9 @@ func (m mockFailRepo) DeleteAnimal(id int64) error {
 }
 
 func TestListAnimalsHandler(t *testing.T) {
+	module := mockModule{}
 	repo := mockRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -71,8 +90,9 @@ func TestListAnimalsHandler(t *testing.T) {
 }
 
 func TestCreateAnimalHandler(t *testing.T) {
+	module := mockModule{}
 	repo := mockRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -86,8 +106,9 @@ func TestCreateAnimalHandler(t *testing.T) {
 }
 
 func TestUpdateAnimalHandler(t *testing.T) {
+	module := mockModule{}
 	repo := mockRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -102,8 +123,9 @@ func TestUpdateAnimalHandler(t *testing.T) {
 }
 
 func TestGetAnimalHandler(t *testing.T) {
+	module := mockModule{}
 	repo := mockRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -116,8 +138,9 @@ func TestGetAnimalHandler(t *testing.T) {
 }
 
 func TestDeleteAnimalHandler(t *testing.T) {
+	module := mockModule{}
 	repo := mockRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -130,8 +153,9 @@ func TestDeleteAnimalHandler(t *testing.T) {
 }
 
 func TestCreateAnimalHandler_Failure(t *testing.T) {
+	module := mockModule{}
 	repo := mockFailRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -145,8 +169,9 @@ func TestCreateAnimalHandler_Failure(t *testing.T) {
 }
 
 func TestUpdateAnimalHandler_Failure(t *testing.T) {
+	module := mockModule{}
 	repo := mockFailRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -161,8 +186,9 @@ func TestUpdateAnimalHandler_Failure(t *testing.T) {
 }
 
 func TestGetAnimalHandler_Failure(t *testing.T) {
+	module := mockModule{}
 	repo := mockFailRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
@@ -175,8 +201,9 @@ func TestGetAnimalHandler_Failure(t *testing.T) {
 }
 
 func TestDeleteAnimalHandler_Failure(t *testing.T) {
+	module := mockModule{}
 	repo := mockFailRepo{}
-	handler := animal.NewAnimalHandler(repo)
+	handler := animal.NewAnimalHandler(module, repo)
 
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)

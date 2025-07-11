@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	"go.uber.org/zap"
 )
 
 var ErrAnimalNotFound = errors.New("animal not found")
@@ -20,12 +19,11 @@ type AnimalRepository interface {
 }
 
 type PostgresAnimalRepository struct {
-	log *zap.Logger
-	db  *sqlx.DB
+	db *sqlx.DB
 }
 
-func NewPostgresAnimalRepository(log *zap.Logger, db *sqlx.DB) *PostgresAnimalRepository {
-	return &PostgresAnimalRepository{log: log, db: db}
+func NewPostgresAnimalRepository(db *sqlx.DB) *PostgresAnimalRepository {
+	return &PostgresAnimalRepository{db: db}
 }
 
 func (r *PostgresAnimalRepository) CreateAnimal(req AnimalCreateRequest) error {
@@ -33,7 +31,6 @@ func (r *PostgresAnimalRepository) CreateAnimal(req AnimalCreateRequest) error {
 	if err != nil {
 		return fmt.Errorf("failed to insert animal: %w", err)
 	}
-	r.log.Info("animal created", zap.String("name", req.Name), zap.Int("age", req.Age))
 	return nil
 }
 
@@ -49,7 +46,6 @@ func (r *PostgresAnimalRepository) UpdateAnimal(id int64, req AnimalUpdateReques
 	if rows == 0 {
 		return ErrAnimalNotFound
 	}
-	r.log.Info("animal updated", zap.Int64("id", id))
 	return nil
 }
 
@@ -72,7 +68,6 @@ func (r *PostgresAnimalRepository) ListAnimals() ([]Animal, error) {
 		}
 		animals = append(animals, animal)
 	}
-	r.log.Info("listed animals", zap.Int("count", len(animals)))
 	return animals, nil
 }
 
@@ -89,7 +84,6 @@ func (r *PostgresAnimalRepository) GetAnimal(id int64) (Animal, error) {
 		}
 		return Animal{}, fmt.Errorf("error getting animal: %w", err)
 	}
-	r.log.Info("retrieved animal", zap.Int64("id", animal.ID))
 	return animal, nil
 }
 
@@ -105,6 +99,5 @@ func (r *PostgresAnimalRepository) DeleteAnimal(id int64) error {
 	if rows == 0 {
 		return ErrAnimalNotFound
 	}
-	r.log.Info("deleted animal", zap.Int64("id", id))
 	return nil
 }
